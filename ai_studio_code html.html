@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="es-AR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PATRIA MATERA | Mates y Accesorios con Tradición Argentina</title>
+  <meta name="description" content="Descubrí mates y accesorios pensados para acompañar cada momento. Tradición argentina, calidad garantizada y atención personalizada." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            crema: { 50: '#FDFBF7', 100: '#F7F3EB', 200: '#EFE7D8' },
+            beige: { 100: '#EAE2D6', 200: '#DDD0BE', 300: '#CBB89D' },
+            marron: { 500: '#7A5843', 600: '#5C3D2E', 700: '#4A3222', 800: '#352216' },
+            oliva: { 500: '#63783D', 600: '#556B2F', 700: '#425424' }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="font-sans antialiased bg-crema-100 text-marron-800 selection:bg-oliva-600 selection:text-crema-50">
+
+  <!-- Banner de aviso solo si falta conectar Supabase -->
+  <div id="setup-banner" class="hidden bg-marron-800 text-crema-50 text-xs sm:text-sm py-2.5 px-4 text-center">
+    Falta conectar tu base de datos: abrí este archivo <code>index.html</code> y pegá tu <strong>SUPABASE_URL</strong> y <strong>SUPABASE_ANON_KEY</strong> en la configuración.
+  </div>
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 bg-crema-50/95 backdrop-blur-md border-b border-beige-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="#inicio" class="flex items-center gap-3 group">
+        <div id="header-logo-container"></div>
+        <span class="font-serif text-xl sm:text-2xl font-semibold tracking-wide text-marron-800 group-hover:text-oliva-600 transition-colors">
+          PATRIA MATERA
+        </span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-marron-700">
+        <a href="#inicio" class="hover:text-oliva-600 transition">Inicio</a>
+        <a href="#promociones" class="hover:text-oliva-600 transition">Promociones</a>
+        <a href="#catalogo" class="hover:text-oliva-600 transition">Tienda</a>
+        <a href="#historia" class="hover:text-oliva-600 transition">Nuestra Historia</a>
+        <a href="#contacto" class="hover:text-oliva-600 transition">Contacto</a>
+      </nav>
+
+      <div class="flex items-center gap-2.5">
+        <button onclick="openAdminModal()" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-marron-600 hover:text-marron-800 px-3 py-1.5 rounded-full border border-beige-200 hover:bg-beige-100 transition">
+          Admin
+        </button>
+        <button onclick="openCart()" class="relative inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-marron-700 text-crema-50 hover:bg-marron-800 transition shadow-sm text-sm font-medium">
+          <span>Carrito</span>
+          <span id="cart-badge" class="hidden min-w-[20px] h-5 px-1.5 rounded-full bg-oliva-600 text-crema-50 text-xs font-bold flex items-center justify-center">0</span>
+        </button>
+        <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-marron-800 hover:bg-beige-100" aria-label="Menú">
+          ☰
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-beige-200 bg-crema-50 px-4 py-3 space-y-2 text-sm font-medium">
+      <a href="#inicio" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-beige-100">Inicio</a>
+      <a href="#promociones" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-beige-100">Promociones</a>
+      <a href="#catalogo" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-beige-100">Tienda</a>
+      <a href="#historia" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-beige-100">Nuestra Historia</a>
+      <a href="#contacto" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-beige-100">Contacto</a>
+      <button onclick="toggleMobileMenu(); openAdminModal()" class="block w-full text-left py-2 px-3 rounded-lg text-marron-600 hover:bg-beige-100">Panel de Administración</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- PORTADA / HERO -->
+    <section id="inicio" class="py-14 sm:py-20 lg:py-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        <div class="lg:col-span-6 space-y-6">
+          <span class="inline-block px-3.5 py-1 rounded-full bg-beige-100 border border-beige-200 text-xs font-semibold uppercase tracking-[0.2em] text-marron-700">
+            Patria Matera · Argentina
+          </span>
+          <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-marron-800 leading-[1.08]">
+            NUESTRA TRADICIÓN, TU COMPAÑÍA
+          </h1>
+          <p class="text-base sm:text-lg text-marron-600 max-w-xl leading-relaxed">
+            Descubrí mates y accesorios pensados para acompañar cada momento.
+          </p>
+          <div class="flex flex-wrap gap-3.5 pt-2">
+            <a href="#catalogo" class="px-7 py-3.5 rounded-full bg-marron-700 text-crema-50 text-sm font-semibold tracking-wide hover:bg-oliva-600 transition shadow-sm">
+              COMPRAR AHORA
+            </a>
+            <a href="#historia" class="px-7 py-3.5 rounded-full border border-marron-700 text-marron-800 text-sm font-semibold tracking-wide hover:bg-beige-100 transition">
+              CONOCÉ NUESTRA HISTORIA
+            </a>
+          </div>
+        </div>
+        <div class="lg:col-span-6">
+          <div id="hero-image-box" class="aspect-[4/3] sm:aspect-[5/4] rounded-3xl overflow-hidden border border-beige-200 shadow-lg bg-beige-100"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROMOCIONES ESPECIALES -->
+    <section id="promociones" class="py-16 bg-crema-50 border-y border-beige-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="text-xs font-semibold uppercase tracking-[0.2em] text-oliva-600">Selección y Ofertas</span>
+          <h2 class="font-serif text-3xl sm:text-4xl font-semibold text-marron-800 mt-2">PROMOCIONES ESPECIALES</h2>
+          <p class="text-sm text-marron-600 mt-2">Productos destacados, combos materos, novedades y descuentos vigentes.</p>
+        </div>
+        <div id="promo-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7"></div>
+      </div>
+    </section>
+
+    <!-- CATÁLOGO -->
+    <section id="catalogo" class="py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-[0.2em] text-oliva-600">Tienda Online</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-semibold text-marron-800 mt-2">Nuestro Catálogo</h2>
+          </div>
+          <input id="search-input" type="search" oninput="renderCatalog()" placeholder="Buscar producto por nombre..." class="w-full md:w-80 px-4 py-2.5 rounded-full border border-beige-300 bg-crema-50 text-sm focus:outline-none focus:border-oliva-600" />
+        </div>
+
+        <div id="category-filters" class="flex flex-wrap gap-2 mb-10"></div>
+        <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7"></div>
+      </div>
+    </section>
+
+    <!-- NUESTRA HISTORIA -->
+    <section id="historia" class="py-20 bg-beige-100/60 border-y border-beige-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-5">
+          <div id="history-image-box" class="aspect-square rounded-3xl overflow-hidden border border-beige-200 bg-crema-50 shadow-md"></div>
+        </div>
+        <div class="lg:col-span-7 space-y-6">
+          <span class="text-xs font-semibold uppercase tracking-[0.2em] text-oliva-600">Nuestra Esencia</span>
+          <h2 class="font-serif text-3xl sm:text-4xl font-semibold text-marron-800">Nuestra Historia</h2>
+          <blockquote class="font-serif text-2xl sm:text-3xl text-marron-700 leading-relaxed italic border-l-4 border-oliva-600 pl-6">
+            “En Patria Matera creemos que el mate es mucho más que una tradición: es una forma de compartir, conectar y disfrutar cada momento. Creamos una propuesta para quienes llevan esta costumbre en el corazón”.
+          </blockquote>
+          <div class="pt-2">
+            <a href="#catalogo" class="inline-flex items-center px-6 py-3 rounded-full bg-marron-700 text-crema-50 text-sm font-semibold hover:bg-oliva-600 transition">
+              Explorar la tienda
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFICIOS -->
+    <section class="py-16 bg-crema-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="p-6 rounded-2xl bg-crema-50 border border-beige-200 text-center">
+          <div class="w-11 h-11 mx-auto rounded-full bg-oliva-600/10 text-oliva-600 flex items-center justify-center mb-3 font-bold">✓</div>
+          <h3 class="font-serif text-xl font-semibold text-marron-800">Calidad garantizada</h3>
+          <p class="text-sm text-marron-600 mt-1.5">Materiales nobles y terminaciones cuidadas en cada pieza.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-crema-50 border border-beige-200 text-center">
+          <div class="w-11 h-11 mx-auto rounded-full bg-oliva-600/10 text-oliva-600 flex items-center justify-center mb-3 font-bold">★</div>
+          <h3 class="font-serif text-xl font-semibold text-marron-800">Productos seleccionados</h3>
+          <p class="text-sm text-marron-600 mt-1.5">Curaduría pensada para quienes disfrutan del buen mate.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-crema-50 border border-beige-200 text-center">
+          <div class="w-11 h-11 mx-auto rounded-full bg-oliva-600/10 text-oliva-600 flex items-center justify-center mb-3 font-bold">♥</div>
+          <h3 class="font-serif text-xl font-semibold text-marron-800">Atención personalizada</h3>
+          <p class="text-sm text-marron-600 mt-1.5">Te asesoramos directamente para que elijas tu compañero ideal.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-crema-50 border border-beige-200 text-center">
+          <div class="w-11 h-11 mx-auto rounded-full bg-oliva-600/10 text-oliva-600 flex items-center justify-center mb-3 font-bold">➤</div>
+          <h3 class="font-serif text-xl font-semibold text-marron-800">Envíos a todo el país</h3>
+          <p class="text-sm text-marron-600 mt-1.5">Llegamos a cada rincón de la Argentina de forma segura.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACTO Y FAQ -->
+    <section id="contacto" class="py-20 bg-crema-50 border-t border-beige-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+        <div class="grid lg:grid-cols-2 gap-12">
+          <div class="space-y-5">
+            <span class="text-xs font-semibold uppercase tracking-[0.2em] text-oliva-600">Contacto y Atención</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-semibold text-marron-800">Hablemos de mates</h2>
+            <p class="text-marron-600 leading-relaxed">¿Tenés dudas sobre un producto o querés consultar por envíos? Escribinos.</p>
+            <div class="p-4 rounded-xl bg-crema-100 border border-beige-200">
+              <h4 class="font-semibold text-sm text-marron-800">Información comercial</h4>
+              <p id="contact-business-info" class="text-sm text-marron-600 mt-0.5"></p>
+            </div>
+            <div class="p-4 rounded-xl bg-crema-100 border border-beige-200">
+              <h4 class="font-semibold text-sm text-marron-800">Horarios de atención</h4>
+              <p id="contact-business-hours" class="text-sm text-marron-600 mt-0.5"></p>
+            </div>
+            <div id="contact-social-links" class="flex flex-wrap gap-3 pt-2"></div>
+          </div>
+
+          <form onsubmit="submitContactForm(event)" class="p-6 sm:p-8 rounded-2xl bg-crema-100 border border-beige-200 space-y-4">
+            <h3 class="font-serif text-2xl font-semibold text-marron-800">Envianos tu consulta</h3>
+            <input id="c-name" type="text" required placeholder="Tu nombre *" class="w-full px-4 py-2.5 rounded-xl border border-beige-300 bg-crema-50 text-sm" />
+            <input id="c-email" type="email" required placeholder="Tu email *" class="w-full px-4 py-2.5 rounded-xl border border-beige-300 bg-crema-50 text-sm" />
+            <textarea id="c-message" rows="4" required placeholder="Tu consulta *" class="w-full px-4 py-2.5 rounded-xl border border-beige-300 bg-crema-50 text-sm"></textarea>
+            <p id="contact-feedback" class="hidden text-xs p-3 rounded-xl"></p>
+            <button type="submit" class="w-full py-3 px-6 rounded-xl bg-marron-700 text-crema-50 text-sm font-semibold hover:bg-oliva-600 transition">ENVIAR CONSULTA</button>
+          </form>
+        </div>
+
+        <div class="pt-8 border-t border-beige-200">
+          <h3 class="font-serif text-2xl sm:text-3xl font-semibold text-marron-800 text-center mb-8">Preguntas Frecuentes</h3>
+          <div id="faq-container" class="max-w-3xl mx-auto space-y-3"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-marron-800 text-crema-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div>
+        <h4 class="font-serif text-2xl font-semibold text-crema-50">PATRIA MATERA</h4>
+        <p class="text-sm text-beige-200 mt-2">Tradición argentina, cultura del mate y el placer de compartir.</p>
+      </div>
+      <div>
+        <h5 class="text-xs font-semibold uppercase tracking-widest text-beige-300 mb-3">Navegación</h5>
+        <ul class="space-y-1.5 text-sm text-beige-100">
+          <li><a href="#inicio" class="hover:text-crema-50">Inicio</a></li>
+          <li><a href="#promociones" class="hover:text-crema-50">Promociones</a></li>
+          <li><a href="#catalogo" class="hover:text-crema-50">Tienda Online</a></li>
+          <li><a href="#historia" class="hover:text-crema-50">Nuestra Historia</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="text-xs font-semibold uppercase tracking-widest text-beige-300 mb-3">Información</h5>
+        <p id="footer-info" class="text-sm text-beige-100"></p>
+      </div>
+      <div>
+        <h5 class="text-xs font-semibold uppercase tracking-widest text-beige-300 mb-3">Administración</h5>
+        <button onclick="openAdminModal()" class="text-sm text-beige-200 hover:text-crema-50 underline">Panel del Propietario</button>
+      </div>
+    </div>
+    <div class="border-t border-marron-700 py-4 text-center text-xs text-beige-300">
+      © <span id="year-copy"></span> PATRIA MATERA. Todos los derechos reservados.
+    </div>
+  </footer>
+
+  <!-- BOTÓN FLOTANTE WHATSAPP -->
+  <a id="floating-wa" href="#" target="_blank" rel="noopener noreferrer" class="hidden fixed bottom-6 right-6 z-30 items-center gap-2 px-5 py-3.5 rounded-full bg-oliva-600 text-crema-50 shadow-lg hover:bg-oliva-700 transition font-semibold text-sm">
+    WhatsApp
+  </a>
+
+  <!-- MODAL FICHA INDIVIDUAL DE PRODUCTO -->
+  <div id="product-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-marron-800/60 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-crema-50 rounded-3xl max-w-4xl w-full p-6 sm:p-8 relative shadow-2xl border border-beige-200 my-8">
+      <button onclick="closeProductModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-beige-100 hover:bg-beige-200 text-marron-800 font-bold">✕</button>
+      <div id="product-modal-content" class="grid md:grid-cols-2 gap-8 items-start"></div>
+    </div>
+  </div>
+
+  <!-- CARRITO LATERAL -->
+  <div id="cart-drawer" class="hidden fixed inset-0 z-50 flex justify-end">
+    <div onclick="closeCart()" class="fixed inset-0 bg-marron-800/45 backdrop-blur-xs"></div>
+    <aside class="relative w-full max-w-md bg-crema-50 h-full shadow-2xl flex flex-col z-10 border-l border-beige-200">
+      <div class="px-6 py-5 border-b border-beige-200 flex items-center justify-between">
+        <h2 class="font-serif text-2xl font-semibold text-marron-800">Tu Carrito</h2>
+        <button onclick="closeCart()" class="p-2 rounded-full hover:bg-beige-100 text-marron-700 font-bold">✕</button>
+      </div>
+      <div id="cart-items-box" class="flex-1 overflow-y-auto px-6 py-4 space-y-3"></div>
+      <form id="cart-checkout-form" onsubmit="checkoutWhatsApp(event)" class="hidden border-t border-beige-200 p-6 bg-crema-100 space-y-3">
+        <div class="flex justify-between text-base font-bold">
+          <span>Total del pedido</span>
+          <span id="cart-total-label">$0</span>
+        </div>
+        <input id="checkout-name" type="text" required placeholder="Tu nombre y apellido *" class="w-full px-3.5 py-2.5 rounded-xl border border-beige-300 bg-crema-50 text-sm" />
+        <input id="checkout-note" type="text" placeholder="Localidad o comentario (opcional)" class="w-full px-3.5 py-2.5 rounded-xl border border-beige-300 bg-crema-50 text-sm" />
+        <p id="checkout-error" class="hidden text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg p-2"></p>
+        <button type="submit" class="w-full py-3 rounded-xl bg-oliva-600 hover:bg-oliva-700 text-crema-50 font-semibold text-sm">FINALIZAR PEDIDO POR WHATSAPP</button>
+        <button type="button" onclick="closeCart()" class="w-full py-2 rounded-xl border border-beige-300 text-marron-700 text-xs font-medium">Continuar comprando</button>
+      </form>
+    </aside>
+  </div>
+
+  <!-- MODAL PANEL DE ADMINISTRACIÓN -->
+  <div id="admin-modal" class="hidden fixed inset-0 z-50 bg-marron-800/70 backdrop-blur-sm overflow-y-auto p-3 sm:p-6">
+    <div class="max-w-5xl mx-auto bg-crema-100 rounded-3xl border border-beige-200 shadow-2xl overflow-hidden my-4">
+      <div class="bg-marron-800 text-crema-50 px-6 py-4 flex items-center justify-between">
+        <h2 class="font-serif text-2xl font-semibold">Panel de Administración · PATRIA MATERA</h2>
+        <div class="flex items-center gap-3">
+          <button id="admin-logout-btn" onclick="adminLogout()" class="hidden text-xs px-3 py-1.5 rounded-lg bg-marron-700 hover:bg-marron-600">Cerrar sesión</button>
+          <button onclick="closeAdminModal()" class="w-8 h-8 rounded-full bg-marron-700 hover:bg-marron-600 font-bold">✕</button>
+        </div>
+      </div>
+
+      <!-- Login Admin -->
+      <div id="admin-login-view" class="p-8 max-w-md mx-auto space-y-4">
+        <h3 class="font-serif text-2xl font-semibold text-marron-800 text-center">Acceso Propietario</h3>
+        <p class="text-xs text-marron-600 text-center">Ingresá con el usuario administrador creado en Supabase.</p>
+        <form onsubmit="adminLogin(event)" class="space-y-3">
+          <input id="admin-email" type="email" required placeholder="Correo electrónico" class="w-full px-4 py-2.5 rounded-xl border border-beige-300 bg-crema-50 text-sm" />
+          <input id="admin-pass" type="password" required placeholder="Contraseña" class="w-full px-4 py-2.5 rounded-xl border border-beige-300 bg-crema-50 text-sm" />
+          <p id="admin-login-err" class="hidden text-xs text-red-700 bg-red-50 p-2 rounded-lg"></p>
+          <button type="submit" class="w-full py-3 rounded-xl bg-marron-700 text-crema-50 font-semibold text-sm hover:bg-oliva-600">INGRESAR</button>
+        </form>
+      </div>
+
+      <!-- Dashboard Admin Autenticado -->
+      <div id="admin-dashboard-view" class="hidden p-6 space-y-6">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="switchAdminTab('products')" class="admin-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-marron-700 text-crema-50" data-tab="products">Productos y Fotos</button>
+          <button onclick="switchAdminTab('categories')" class="admin-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-crema-50 border border-beige-300" data-tab="categories">Categorías</button>
+          <button onclick="switchAdminTab('orders')" class="admin-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-crema-50 border border-beige-300" data-tab="orders">Pedidos y Consultas</button>
+          <button onclick="switchAdminTab('settings')" class="admin-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-crema-50 border border-beige-300" data-tab="settings">Marca y Contacto</button>
+        </div>
+
+        <!-- TAB PRODUCTOS -->
+        <div id="tab-products" class="grid lg:grid-cols-12 gap-6">
+          <form onsubmit="saveProduct(event)" class="lg:col-span-5 bg-crema-50 p-5 rounded-2xl border border-beige-200 space-y-3">
+            <div class="flex justify-between items-center">
+              <h3 id="prod-form-title" class="font-serif text-xl font-semibold">Nuevo Producto</h3>
+              <button type="button" onclick="resetProdForm()" class="text-xs text-marron-600 underline">Limpiar</button>
+            </div>
+            <input id="p-name" type="text" required placeholder="Nombre del producto *" class="w-full px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+            <select id="p-category" required class="w-full px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm"></select>
+            <textarea id="p-desc" rows="3" required placeholder="Descripción completa *" class="w-full px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm"></textarea>
+            <div class="grid grid-cols-3 gap-2">
+              <input id="p-price" type="number" step="0.01" min="0" required placeholder="Precio *" class="px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+              <input id="p-promo" type="number" step="0.01" min="0" placeholder="Promo" class="px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+              <input id="p-stock" type="number" min="0" required value="1" placeholder="Stock" class="px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+            </div>
+            <input id="p-variants" type="text" placeholder="Variantes por coma (ej: Negro, Marrón)" class="w-full px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <label class="flex items-center gap-1.5"><input id="p-available" type="checkbox" checked /> Disponible</label>
+              <label class="flex items-center gap-1.5"><input id="p-featured" type="checkbox" /> Destacado</label>
+              <label class="flex items-center gap-1.5"><input id="p-ispromo" type="checkbox" /> En Promociones</label>
+              <label class="flex items-center gap-1.5"><input id="p-isnew" type="checkbox" /> Novedad</label>
+            </div>
+            <div class="pt-2 border-t border-beige-200 space-y-2">
+              <label class="block text-xs font-semibold">Subir fotografías desde tu dispositivo</label>
+              <input type="file" multiple accept="image/*" onchange="uploadProductPhotos(this.files)" class="text-xs w-full" />
+              <div id="p-images-preview" class="grid grid-cols-3 gap-2"></div>
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-oliva-600 text-crema-50 font-semibold text-sm">GUARDAR PRODUCTO</button>
+          </form>
+          <div id="admin-products-list" class="lg:col-span-7 space-y-3"></div>
+        </div>
+
+        <!-- TAB CATEGORÍAS -->
+        <div id="tab-categories" class="hidden max-w-lg bg-crema-50 p-5 rounded-2xl border border-beige-200 space-y-4">
+          <form onsubmit="addCategory(event)" class="flex gap-2">
+            <input id="new-cat-name" type="text" required placeholder="Nueva categoría" class="flex-1 px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+            <button type="submit" class="px-4 py-2 rounded-xl bg-marron-700 text-crema-50 text-xs font-semibold">Agregar</button>
+          </form>
+          <div id="admin-categories-list" class="space-y-2"></div>
+        </div>
+
+        <!-- TAB PEDIDOS Y CONSULTAS -->
+        <div id="tab-orders" class="hidden grid md:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <h3 class="font-serif text-xl font-semibold">Pedidos recibidos</h3>
+            <div id="admin-orders-list" class="space-y-3"></div>
+          </div>
+          <div class="space-y-3">
+            <h3 class="font-serif text-xl font-semibold">Consultas de contacto</h3>
+            <div id="admin-messages-list" class="space-y-3"></div>
+          </div>
+        </div>
+
+        <!-- TAB CONFIGURACIÓN -->
+        <form id="tab-settings" onsubmit="saveSettings(event)" class="hidden bg-crema-50 p-6 rounded-2xl border border-beige-200 space-y-4">
+          <h3 class="font-serif text-xl font-semibold">Identidad Visual y Contacto</h3>
+          <div class="grid sm:grid-cols-3 gap-4">
+            <div class="p-3 rounded-xl bg-crema-100 border border-beige-200 space-y-2">
+              <span class="text-xs font-semibold block">Logo Oficial</span>
+              <div id="set-logo-prev" class="h-20 bg-beige-100 rounded-lg overflow-hidden flex items-center justify-center text-xs"></div>
+              <input type="file" accept="image/*" onchange="uploadSiteAsset('logo_url', this.files[0])" class="text-[11px] w-full" />
+              <button type="button" onclick="clearSiteAsset('logo_url')" class="text-[11px] text-red-700 underline">Quitar</button>
+            </div>
+            <div class="p-3 rounded-xl bg-crema-100 border border-beige-200 space-y-2">
+              <span class="text-xs font-semibold block">Foto Principal (Portada)</span>
+              <div id="set-hero-prev" class="h-20 bg-beige-100 rounded-lg overflow-hidden flex items-center justify-center text-xs"></div>
+              <input type="file" accept="image/*" onchange="uploadSiteAsset('hero_image_url', this.files[0])" class="text-[11px] w-full" />
+              <button type="button" onclick="clearSiteAsset('hero_image_url')" class="text-[11px] text-red-700 underline">Quitar</button>
+            </div>
+            <div class="p-3 rounded-xl bg-crema-100 border border-beige-200 space-y-2">
+              <span class="text-xs font-semibold block">Foto Nuestra Historia</span>
+              <div id="set-hist-prev" class="h-20 bg-beige-100 rounded-lg overflow-hidden flex items-center justify-center text-xs"></div>
+              <input type="file" accept="image/*" onchange="uploadSiteAsset('history_image_url', this.files[0])" class="text-[11px] w-full" />
+              <button type="button" onclick="clearSiteAsset('history_image_url')" class="text-[11px] text-red-700 underline">Quitar</button>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3">
+            <input id="s-wa" type="text" placeholder="WhatsApp comercial (ej: 54911...)" class="px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+            <input id="s-ig" type="url" placeholder="URL de Instagram" class="px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+            <input id="s-email" type="email" placeholder="Email de contacto" class="px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+            <input id="s-hours" type="text" placeholder="Horarios de atención" class="px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+          </div>
+          <input id="s-info" type="text" placeholder="Información comercial (ubicación, envíos, etc.)" class="w-full px-3 py-2 rounded-xl border border-beige-300 bg-crema-100 text-sm" />
+
+          <div class="space-y-2 pt-2 border-t border-beige-200">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-semibold uppercase">Preguntas Frecuentes</span>
+              <button type="button" onclick="addFaqRow()" class="text-xs text-oliva-600 font-semibold">+ Agregar pregunta</button>
+            </div>
+            <div id="admin-faq-list" class="space-y-2"></div>
+          </div>
+
+          <button type="submit" class="px-6 py-2.5 rounded-xl bg-oliva-600 text-crema-50 text-sm font-semibold">GUARDAR CONFIGURACIÓN</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // CONFIGURACIÓN DE TU BASE DE DATOS SUPABASE (REEMPLAZAR ESTAS 2 LÍNEAS)
+    // =========================================================================
+    const SUPABASE_URL = "PEGAR_TU_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "PEGAR_TU_SUPABASE_ANON_KEY";
+    // =========================================================================
+
+    const isConfigured = SUPABASE_URL.startsWith("http") && !SUPABASE_ANON_KEY.includes("PEGAR_");
+    const sb = isConfigured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    let state = {
+      settings: { logo_url: null, hero_image_url: null, history_image_url: null, whatsapp_number: '', instagram_url: '', contact_email: '', business_info: '', business_hours: '', faq_items: [] },
+      categories: [],
+      products: [],
+      selectedCategorySlug: 'todas',
+      cart: JSON.parse(localStorage.getItem('pm_cart_v1') || '[]'),
+      editingProductId: null,
+      editingImages: [],
+      adminSession: null
+    };
+
+    document.getElementById('year-copy').textContent = new Date().getFullYear();
+
+    function esc(str) {
+      return String(str ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+    function formatPrice(n) {
+      return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(Number(n || 0));
+    }
+    function waLink(msg) {
+      const clean = (state.settings.whatsapp_number || '').replace(/\D/g, '');
+      return clean ? `https://wa.me/${clean}?text=${encodeURIComponent(msg)}` : null;
+    }
+    function placeholderBox(text) {
+      return `<div class="w-full h-full flex flex-col items-center justify-center bg-beige-100/70 border border-dashed border-beige-300 text-marron-500 p-6 text-center"><span class="text-xs font-medium uppercase tracking-wider">${esc(text)}</span></div>`;
+    }
+
+    async function initApp() {
+      if (!isConfigured) {
+        document.getElementById('setup-banner').classList.remove('hidden');
+        renderAll();
+        return;
+      }
+      const [{ data: set }, { data: cats }, { data: prods }, { data: sess }] = await Promise.all([
+        sb.from('site_settings').select('*').eq('id', 'default').maybeSingle(),
+        sb.from('categories').select('*').order('sort_order', { ascending: true }),
+        sb.from('products').select('*, category:categories(*), images:product_images(*)').order('featured', { ascending: false }).order('created_at', { ascending: false }),
+        sb.auth.getSession()
+      ]);
+      if (set) state.settings = set;
+      if (cats) state.categories = cats;
+      if (prods) state.products = prods;
+      state.adminSession = sess?.session || null;
+      renderAll();
+    }
+
+    function renderAll() {
+      renderBrandMedia();
+      renderPromos();
+      renderCategories();
+      renderCatalog();
+      renderContact();
+      renderCart();
+    }
+
+    function renderBrandMedia() {
+      const s = state.settings;
+      document.getElementById('header-logo-container').innerHTML = s.logo_url
+        ? `<img src="${esc(s.logo_url)}" alt="Logo Patria Matera" class="h-12 w-auto max-w-[140px] object-contain" />`
+        : `<div class="h-10 px-3 rounded-lg border border-dashed border-beige-300 bg-beige-100/60 flex items-center text-[11px] text-marron-500 uppercase">Logo Patria Matera</div>`;
+
+      document.getElementById('hero-image-box').innerHTML = s.hero_image_url
+        ? `<img src="${esc(s.hero_image_url)}" alt="Patria Matera" class="w-full h-full object-cover" />`
+        : placeholderBox('Fotografía principal de Patria Matera');
+
+      document.getElementById('history-image-box').innerHTML = s.history_image_url
+        ? `<img src="${esc(s.history_image_url)}" alt="Nuestra Historia" class="w-full h-full object-cover" />`
+        : placeholderBox('Fotografía de la marca (opcional)');
+    }
+
+    function productCardHtml(p) {
+      const imgs = (p.images || []).sort((a,b) => (b.is_main - a.is_main) || (a.sort_order - b.sort_order));
+      const mainImg = imgs[0]?.url || null;
+      const avail = p.available && p.stock > 0;
+      const hasPromo = p.promo_price !== null && Number(p.promo_price) < Number(p.price);
+
+      return `
+        <article class="group bg-crema-50 rounded-2xl border border-beige-200 overflow-hidden flex flex-col hover:shadow-lg transition-all duration-300">
+          <div onclick="openProductModal('${p.id}')" class="cursor-pointer relative aspect-square overflow-hidden bg-beige-100">
+            ${mainImg ? `<img src="${esc(mainImg)}" alt="${esc(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />` : placeholderBox('Fotografía del producto')}
+            <div class="absolute top-3 left-3 flex gap-1.5">
+              ${hasPromo ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase bg-oliva-600 text-crema-50">Oferta</span>` : ''}
+              ${p.is_new ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase bg-marron-700 text-crema-50">Novedad</span>` : ''}
+              ${!avail ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase bg-marron-800/80 text-crema-50">Sin stock</span>` : ''}
+            </div>
+          </div>
+          <div class="p-5 flex-1 flex flex-col">
+            <span class="text-[11px] font-semibold uppercase tracking-widest text-oliva-600">${esc(p.category?.name || '')}</span>
+            <h3 onclick="openProductModal('${p.id}')" class="cursor-pointer font-serif text-xl font-semibold text-marron-800 mt-1 hover:text-oliva-600">${esc(p.name)}</h3>
+            <p class="text-sm text-marron-600 mt-1.5 line-clamp-2 flex-1">${esc(p.description)}</p>
+            <div class="mt-4 pt-3 border-t border-beige-200 flex items-baseline justify-between">
+              <div>
+                ${hasPromo
+                  ? `<span class="text-lg font-bold text-oliva-600">${formatPrice(p.promo_price)}</span> <span class="text-xs text-marron-500 line-through">${formatPrice(p.price)}</span>`
+                  : `<span class="text-lg font-bold text-marron-800">${formatPrice(p.price)}</span>`}
+              </div>
+              <span class="text-xs font-medium ${avail ? 'text-oliva-600' : 'text-marron-500'}">${avail ? 'Disponible' : 'Agotado'}</span>
+            </div>
+            <div class="mt-4 grid grid-cols-2 gap-2">
+              <button onclick="openProductModal('${p.id}')" class="px-3 py-2.5 rounded-xl border border-beige-300 text-xs font-semibold text-marron-800 hover:bg-beige-100">VER PRODUCTO</button>
+              <button onclick="quickAddCart('${p.id}')" ${!avail ? 'disabled' : ''} class="px-3 py-2.5 rounded-xl bg-marron-700 text-crema-50 text-xs font-semibold hover:bg-oliva-600 disabled:opacity-45">AGREGAR AL CARRITO</button>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function renderPromos() {
+      const promos = state.products.filter(p => p.is_promo || p.featured || p.is_new || p.promo_price !== null);
+      document.getElementById('promo-grid').innerHTML = promos.length
+        ? promos.map(productCardHtml).join('')
+        : `<div class="col-span-full rounded-2xl border border-dashed border-beige-300 bg-crema-100/70 p-10 text-center text-sm text-marron-600">Cuando cargues productos destacados, en oferta o novedades desde el Panel de Administración, aparecerán aquí.</div>`;
+    }
+
+    function renderCategories() {
+      const btns = [{ slug: 'todas', name: 'Todas' }, ...state.categories];
+      document.getElementById('category-filters').innerHTML = btns.map(c => `
+        <button onclick="selectCategory('${esc(c.slug)}')" class="px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition ${state.selectedCategorySlug === c.slug ? 'bg-marron-700 text-crema-50' : 'bg-crema-50 border border-beige-300 text-marron-700 hover:bg-beige-100'}">${esc(c.name)}</button>
+      `).join('');
+    }
+    function selectCategory(slug) { state.selectedCategorySlug = slug; renderCategories(); renderCatalog(); }
+
+    function renderCatalog() {
+      const q = (document.getElementById('search-input').value || '').toLowerCase().trim();
+      const filtered = state.products.filter(p => {
+        const matchCat = state.selectedCategorySlug === 'todas' || p.category?.slug === state.selectedCategorySlug;
+        const matchQ = !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
+        return matchCat && matchQ;
+      });
+      document.getElementById('catalog-grid').innerHTML = filtered.length
+        ? filtered.map(productCardHtml).join('')
+        : `<div class="col-span-full rounded-2xl border border-dashed border-beige-300 bg-crema-50 p-12 text-center text-sm text-marron-500">${state.products.length === 0 ? 'Todavía no hay productos cargados. Ingresá al Panel de Administración para subir tus productos y fotografías reales.' : 'No encontramos productos para esa búsqueda.'}</div>`;
+    }
+
+    function renderContact() {
+      const s = state.settings;
+      document.getElementById('contact-business-info').textContent = s.business_info || 'Editable desde el Panel de Administración.';
+      document.getElementById('contact-business-hours').textContent = s.business_hours || 'Horarios editables desde el Panel de Administración.';
+      document.getElementById('footer-info').textContent = s.business_hours || s.business_info || 'Datos comerciales editables desde Admin.';
+
+      const waUrl = waLink('¡Hola Patria Matera! Quisiera hacerles una consulta.');
+      const floatBtn = document.getElementById('floating-wa');
+      if (waUrl) { floatBtn.href = waUrl; floatBtn.classList.remove('hidden'); floatBtn.classList.add('inline-flex'); }
+      else { floatBtn.classList.add('hidden'); }
+
+      let links = '';
+      if (waUrl) links += `<a href="${waUrl}" target="_blank" class="px-5 py-2.5 rounded-full bg-oliva-600 text-crema-50 text-sm font-medium">WhatsApp Comercial</a>`;
+      if (s.instagram_url) links += `<a href="${esc(s.instagram_url)}" target="_blank" class="px-5 py-2.5 rounded-full border border-marron-700 text-marron-800 text-sm font-medium">Instagram</a>`;
+      if (s.contact_email) links += `<a href="mailto:${esc(s.contact_email)}" class="px-5 py-2.5 rounded-full border border-beige-300 text-marron-700 text-sm font-medium">${esc(s.contact_email)}</a>`;
+      document.getElementById('contact-social-links').innerHTML = links || `<span class="text-xs text-marron-500">WhatsApp e Instagram editables desde el Panel de Administración.</span>`;
+
+      const faqs = Array.isArray(s.faq_items) ? s.faq_items : [];
+      document.getElementById('faq-container').innerHTML = faqs.length
+        ? faqs.map((f, i) => `
+          <div class="rounded-xl border border-beige-200 bg-crema-100 p-4">
+            <h4 class="font-semibold text-sm text-marron-800">${esc(f.question)}</h4>
+            <p class="text-sm text-marron-600 mt-1.5">${esc(f.answer)}</p>
+          </div>`).join('')
+        : `<p class="text-center text-sm text-marron-500">Preguntas frecuentes editables desde el Panel de Administración.</p>`;
+    }
+
+    // FICHA INDIVIDUAL
+    let modalState = { product: null, imgIdx: 0, variant: '', qty: 1 };
+    function openProductModal(id) {
+      const p = state.products.find(x => x.id === id);
+      if (!p) return;
+      modalState = { product: p, imgIdx: 0, variant: (p.variants && p.variants[0]) || '', qty: 1 };
+      renderProductModal();
+      document.getElementById('product-modal').classList.remove('hidden');
+    }
+    function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
+    function renderProductModal() {
+      const p = modalState.product;
+      const imgs = (p.images || []).sort((a,b) => (b.is_main - a.is_main));
+      const curImg = imgs[modalState.imgIdx]?.url || null;
+      const avail = p.available && p.stock > 0;
+      const effPrice = p.promo_price ?? p.price;
+      const msg = `¡Hola Patria Matera! Me interesa:\n• ${p.name}${modalState.variant ? ' ('+modalState.variant+')' : ''}\n• Cantidad: ${modalState.qty}\n• Total: ${formatPrice(effPrice * modalState.qty)}`;
+      const waUrl = waLink(msg);
+
+      document.getElementById('product-modal-content').innerHTML = `
+        <div class="space-y-3">
+          <div class="aspect-square rounded-2xl overflow-hidden bg-beige-100 border border-beige-200">
+            ${curImg ? `<img src="${esc(curImg)}" class="w-full h-full object-cover" />` : placeholderBox('Fotografía del producto')}
+          </div>
+          ${imgs.length > 1 ? `<div class="grid grid-cols-5 gap-2">${imgs.map((im, i) => `<button onclick="modalState.imgIdx=${i};renderProductModal()" class="aspect-square rounded-lg overflow-hidden border-2 ${i===modalState.imgIdx?'border-oliva-600':'border-beige-200'}"><img src="${esc(im.url)}" class="w-full h-full object-cover" /></button>`).join('')}</div>` : ''}
+        </div>
+        <div class="space-y-4">
+          <span class="text-xs font-semibold uppercase tracking-widest text-oliva-600">${esc(p.category?.name || '')}</span>
+          <h2 class="font-serif text-3xl font-semibold text-marron-800">${esc(p.name)}</h2>
+          <div class="text-2xl font-bold text-marron-800">${formatPrice(effPrice)} ${p.promo_price ? `<span class="text-sm text-marron-500 line-through font-normal">${formatPrice(p.price)}</span>`:''}</div>
+          <p class="text-sm text-marron-600 whitespace-pre-line">${esc(p.description)}</p>
+          <p class="text-xs font-semibold ${avail?'text-oliva-600':'text-marron-500'}">${avail ? `Disponible (${p.stock} en stock)` : 'Sin stock'}</p>
+          ${p.variants?.length ? `<div class="flex flex-wrap gap-2">${p.variants.map(v => `<button onclick="modalState.variant='${esc(v)}';renderProductModal()" class="px-3 py-1.5 rounded-xl text-xs font-semibold border ${modalState.variant===v?'bg-marron-700 text-crema-50':'bg-crema-100 border-beige-300'}">${esc(v)}</button>`).join('')}</div>` : ''}
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-semibold uppercase">Cantidad:</span>
+            <div class="inline-flex items-center border border-beige-300 rounded-xl bg-crema-100">
+              <button onclick="modalState.qty=Math.max(1,modalState.qty-1);renderProductModal()" class="px-3 py-1.5 font-bold">-</button>
+              <span class="px-3 text-sm font-semibold">${modalState.qty}</span>
+              <button onclick="modalState.qty=Math.min(${p.stock||99},modalState.qty+1);renderProductModal()" class="px-3 py-1.5 font-bold">+</button>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-2.5 pt-2">
+            <button onclick="addFromModal()" ${!avail?'disabled':''} class="py-3 px-4 rounded-xl bg-marron-700 text-crema-50 text-xs font-semibold hover:bg-oliva-600 disabled:opacity-45">AGREGAR AL CARRITO</button>
+            ${waUrl ? `<a href="${waUrl}" target="_blank" class="py-3 px-4 rounded-xl bg-oliva-600 text-crema-50 text-xs font-semibold text-center hover:bg-oliva-700">COMPRAR POR WHATSAPP</a>` : `<span class="text-xs text-marron-500 flex items-center justify-center border border-dashed border-beige-300 rounded-xl p-2">WhatsApp sin configurar</span>`}
+          </div>
+        </div>`;
+    }
+
+    // CARRITO
+    function saveCart() { localStorage.setItem('pm_cart_v1', JSON.stringify(state.cart)); renderCart(); }
+    function openCart() { document.getElementById('cart-drawer').classList.remove('hidden'); }
+    function closeCart() { document.getElementById('cart-drawer').classList.add('hidden'); }
+    function quickAddCart(id) {
+      const p = state.products.find(x => x.id === id);
+      if (!p || !p.available || p.stock <= 0) return;
+      addItemToCart(p, (p.variants && p.variants[0]) || '', 1);
+    }
+    function addFromModal() {
+      addItemToCart(modalState.product, modalState.variant, modalState.qty);
+      closeProductModal();
+    }
+    function addItemToCart(p, variant, qty) {
+      const imgs = (p.images || []).sort((a,b) => b.is_main - a.is_main);
+      const idx = state.cart.findIndex(i => i.id === p.id && i.variant === variant);
+      if (idx > -1) state.cart[idx].qty = Math.min(state.cart[idx].qty + qty, p.stock || 99);
+      else state.cart.push({ id: p.id, name: p.name, price: p.promo_price ?? p.price, variant, qty, imageUrl: imgs[0]?.url || null, stock: p.stock });
+      saveCart();
+      openCart();
+    }
+    function updateCartQty(idx, delta) {
+      state.cart[idx].qty += delta;
+      if (state.cart[idx].qty <= 0) state.cart.splice(idx, 1);
+      saveCart();
+    }
+    function renderCart() {
+      const badge = document.getElementById('cart-badge');
+      const totalQty = state.cart.reduce((s, i) => s + i.qty, 0);
+      const totalAmt = state.cart.reduce((s, i) => s + i.price * i.qty, 0);
+      badge.textContent = totalQty;
+      badge.classList.toggle('hidden', totalQty === 0);
+
+      const box = document.getElementById('cart-items-box');
+      const form = document.getElementById('cart-checkout-form');
+      if (state.cart.length === 0) {
+        form.classList.add('hidden');
+        box.innerHTML = `<div class="text-center py-12 text-marron-500 text-sm">Tu carrito está vacío.</div>`;
+        return;
+      }
+      form.classList.remove('hidden');
+      document.getElementById('cart-total-label').textContent = formatPrice(totalAmt);
+      box.innerHTML = state.cart.map((i, idx) => `
+        <div class="flex gap-3 p-3 rounded-xl bg-crema-100 border border-beige-200 items-center">
+          <div class="w-16 h-16 rounded-lg overflow-hidden bg-beige-100 shrink-0">${i.imageUrl ? `<img src="${esc(i.imageUrl)}" class="w-full h-full object-cover" />` : placeholderBox('Sin foto')}</div>
+          <div class="flex-1 min-w-0">
+            <h4 class="font-semibold text-sm truncate">${esc(i.name)}</h4>
+            ${i.variant ? `<p class="text-xs text-marron-500">${esc(i.variant)}</p>` : ''}
+            <div class="flex items-center justify-between mt-1.5">
+              <div class="inline-flex border border-beige-300 rounded-lg bg-crema-50 text-xs">
+                <button onclick="updateCartQty(${idx}, -1)" class="px-2 py-1">-</button>
+                <span class="px-2 py-1 font-semibold">${i.qty}</span>
+                <button onclick="updateCartQty(${idx}, 1)" class="px-2 py-1">+</button>
+              </div>
+              <span class="text-sm font-bold">${formatPrice(i.price * i.qty)}</span>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    async function checkoutWhatsApp(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('checkout-error');
+      errEl.classList.add('hidden');
+      const customerName = document.getElementById('checkout-name').value.trim();
+      const customerNote = document.getElementById('checkout-note').value.trim();
+      if (!state.settings.whatsapp_number) {
+        errEl.textContent = 'Configurá primero el número de WhatsApp en el Panel de Administración.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      const total = state.cart.reduce((s, i) => s + i.price * i.qty, 0);
+      if (sb) {
+        const { data: order, error } = await sb.from('orders').insert({ customer_name: customerName, customer_note: customerNote, total }).select().single();
+        if (!error && order) {
+          await sb.from('order_items').insert(state.cart.map(i => ({
+            order_id: order.id, product_id: i.id, product_name: i.name, variant: i.variant || null, quantity: i.qty, unit_price: i.price, subtotal: i.price * i.qty
+          })));
+        }
+      }
+      const lines = state.cart.map(i => `• ${i.qty}x ${i.name}${i.variant ? ' ('+i.variant+')' : ''} — ${formatPrice(i.price * i.qty)}`);
+      const msg = `¡Hola Patria Matera! Quiero realizar un pedido:\n\n*Cliente:* ${customerName}\n\n${lines.join('\n')}\n\n*Total:* ${formatPrice(total)}${customerNote ? '\n*Notas:* ' + customerNote : ''}`;
+      const url = waLink(msg);
+      state.cart = [];
+      saveCart();
+      closeCart();
+      window.open(url, '_blank');
+    }
+
+    async function submitContactForm(e) {
+      e.preventDefault();
+      const fb = document.getElementById('contact-feedback');
+      if (!sb) return alert('Conectá Supabase primero para guardar consultas.');
+      const { error } = await sb.from('contact_messages').insert({
+        name: document.getElementById('c-name').value.trim(),
+        email: document.getElementById('c-email').value.trim(),
+        message: document.getElementById('c-message').value.trim()
+      });
+      fb.classList.remove('hidden');
+      if (error) { fb.className = 'text-xs p-3 rounded-xl bg-red-50 text-red-700'; fb.textContent = 'Error al enviar.'; }
+      else { fb.className = 'text-xs p-3 rounded-xl bg-oliva-600/15 text-oliva-700'; fb.textContent = '¡Gracias! Recibimos tu consulta.'; e.target.reset(); }
+    }
+
+    // =========================================================================
+    // PANEL DE ADMINISTRACIÓN
+    // =========================================================================
+    function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
+    function openAdminModal() {
+      document.getElementById('admin-modal').classList.remove('hidden');
+      refreshAdminView();
+    }
+    function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
+
+    function refreshAdminView() {
+      const logged = Boolean(state.adminSession);
+      document.getElementById('admin-login-view').classList.toggle('hidden', logged);
+      document.getElementById('admin-dashboard-view').classList.toggle('hidden', !logged);
+      document.getElementById('admin-logout-btn').classList.toggle('hidden', !logged);
+      if (logged) loadAdminData();
+    }
+
+    async function adminLogin(e) {
+      e.preventDefault();
+      if (!sb) return alert('Primero pegá tus credenciales de Supabase en el archivo index.html.');
+      const errEl = document.getElementById('admin-login-err');
+      errEl.classList.add('hidden');
+      const { data, error } = await sb.auth.signInWithPassword({
+        email: document.getElementById('admin-email').value.trim(),
+        password: document.getElementById('admin-pass').value
+      });
+      if (error) { errEl.textContent = 'Credenciales inválidas.'; errEl.classList.remove('hidden'); return; }
+      state.adminSession = data.session;
+      refreshAdminView();
+    }
+    async function adminLogout() {
+      if (sb) await sb.auth.signOut();
+      state.adminSession = null;
+      refreshAdminView();
+    }
+
+    function switchAdminTab(tab) {
+      ['products', 'categories', 'orders', 'settings'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+      });
+      document.querySelectorAll('.admin-tab-btn').forEach(b => {
+        const active = b.dataset.tab === tab;
+        b.className = `admin-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold ${active ? 'bg-marron-700 text-crema-50' : 'bg-crema-50 border border-beige-300'}`;
+      });
+    }
+
+    async function loadAdminData() {
+      await initApp();
+      document.getElementById('p-category').innerHTML = state.categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+      document.getElementById('admin-products-list').innerHTML = state.products.map(p => `
+        <div class="flex items-center justify-between p-3 rounded-xl bg-crema-50 border border-beige-200 gap-3">
+          <div><div class="font-semibold text-sm">${esc(p.name)}</div><div class="text-xs text-marron-600">${formatPrice(p.promo_price ?? p.price)} · Stock: ${p.stock}</div></div>
+          <div class="flex gap-2">
+            <button onclick="editProduct('${p.id}')" class="px-2.5 py-1 rounded-lg border border-beige-300 text-xs">Editar</button>
+            <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1 rounded-lg border border-red-200 text-red-700 text-xs">Eliminar</button>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('admin-categories-list').innerHTML = state.categories.map(c => `
+        <div class="flex justify-between items-center px-3 py-2 rounded-xl bg-crema-100 border border-beige-200 text-sm">
+          <span>${esc(c.name)}</span>
+          <button onclick="deleteCategory('${c.id}')" class="text-xs text-red-700">Eliminar</button>
+        </div>`).join('');
+
+      const [{ data: ords }, { data: msgs }] = await Promise.all([
+        sb.from('orders').select('*, items:order_items(*)').order('created_at', { ascending: false }),
+        sb.from('contact_messages').select('*').order('created_at', { ascending: false })
+      ]);
+      document.getElementById('admin-orders-list').innerHTML = (ords || []).map(o => `
+        <div class="p-4 rounded-xl bg-crema-50 border border-beige-200 text-xs space-y-1">
+          <div class="font-bold text-sm">${esc(o.customer_name)} — ${formatPrice(o.total)}</div>
+          ${(o.items||[]).map(it => `<div>• ${it.quantity}x ${esc(it.product_name)}</div>`).join('')}
+        </div>`).join('') || '<p class="text-xs text-marron-500">Sin pedidos aún.</p>';
+
+      document.getElementById('admin-messages-list').innerHTML = (msgs || []).map(m => `
+        <div class="p-4 rounded-xl bg-crema-50 border border-beige-200 text-xs space-y-1">
+          <div class="font-bold">${esc(m.name)} (${esc(m.email)})</div>
+          <p>${esc(m.message)}</p>
+        </div>`).join('') || '<p class="text-xs text-marron-500">Sin mensajes aún.</p>';
+
+      const s = state.settings;
+      document.getElementById('s-wa').value = s.whatsapp_number || '';
+      document.getElementById('s-ig').value = s.instagram_url || '';
+      document.getElementById('s-email').value = s.contact_email || '';
+      document.getElementById('s-hours').value = s.business_hours || '';
+      document.getElementById('s-info').value = s.business_info || '';
+      renderAdminSettingsPreviews();
+      renderAdminFaqs();
+    }
+
+    async function uploadToStorage(file) {
+      const ext = file.name.split('.').pop();
+      const filePath = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await sb.storage.from('patria-matera-media').upload(filePath, file);
+      if (error) { alert('Error subiendo foto: ' + error.message); return null; }
+      return sb.storage.from('patria-matera-media').getPublicUrl(filePath).data.publicUrl;
+    }
+
+    async function uploadProductPhotos(files) {
+      for (const f of files) {
+        const url = await uploadToStorage(f);
+        if (url) state.editingImages.push({ url, is_main: state.editingImages.length === 0 });
+      }
+      renderEditingImages();
+    }
+    function renderEditingImages() {
+      document.getElementById('p-images-preview').innerHTML = state.editingImages.map((im, i) => `
+        <div class="relative aspect-square rounded-lg overflow-hidden border border-beige-300">
+          <img src="${esc(im.url)}" class="w-full h-full object-cover" />
+          <div class="absolute bottom-0 inset-x-0 bg-marron-800/85 text-crema-50 flex justify-between px-1.5 py-0.5 text-[10px]">
+            <button type="button" onclick="state.editingImages.forEach((x,j)=>x.is_main=j===${i});renderEditingImages()">${im.is_main?'★ Principal':'★'}</button>
+            <button type="button" onclick="state.editingImages.splice(${i},1);renderEditingImages()" class="text-red-300">✕</button>
+          </div>
+        </div>`).join('');
+    }
+    function resetProdForm() {
+      state.editingProductId = null; state.editingImages = [];
+      document.getElementById('prod-form-title').textContent = 'Nuevo Producto';
+      ['p-name','p-desc','p-price','p-promo','p-variants'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('p-stock').value = 1;
+      renderEditingImages();
+    }
+    function editProduct(id) {
+      const p = state.products.find(x => x.id === id);
+      if (!p) return;
+      state.editingProductId = p.id;
+      state.editingImages = (p.images || []).map(i => ({ url: i.url, is_main: i.is_main }));
+      document.getElementById('prod-form-title').textContent = 'Editar Producto';
+      document.getElementById('p-name').value = p.name;
+      document.getElementById('p-category').value = p.category_id;
+      document.getElementById('p-desc').value = p.description;
+      document.getElementById('p-price').value = p.price;
+      document.getElementById('p-promo').value = p.promo_price ?? '';
+      document.getElementById('p-stock').value = p.stock;
+      document.getElementById('p-variants').value = (p.variants || []).join(', ');
+      document.getElementById('p-available').checked = p.available;
+      document.getElementById('p-featured').checked = p.featured;
+      document.getElementById('p-ispromo').checked = p.is_promo;
+      document.getElementById('p-isnew').checked = p.is_new;
+      renderEditingImages();
+    }
+    async function saveProduct(e) {
+      e.preventDefault();
+      const promoVal = document.getElementById('p-promo').value;
+      const payload = {
+        name: document.getElementById('p-name').value.trim(),
+        category_id: document.getElementById('p-category').value,
+        description: document.getElementById('p-desc').value.trim(),
+        price: Number(document.getElementById('p-price').value),
+        promo_price: promoVal ? Number(promoVal) : null,
+        stock: Number(document.getElementById('p-stock').value),
+        variants: document.getElementById('p-variants').value.split(',').map(v => v.trim()).filter(Boolean),
+        available: document.getElementById('p-available').checked,
+        featured: document.getElementById('p-featured').checked,
+        is_promo: document.getElementById('p-ispromo').checked || Boolean(promoVal),
+        is_new: document.getElementById('p-isnew').checked
+      };
+      let prodId = state.editingProductId;
+      if (prodId) {
+        await sb.from('products').update(payload).eq('id', prodId);
+        await sb.from('product_images').delete().eq('product_id', prodId);
+      } else {
+        const { data } = await sb.from('products').insert(payload).select().single();
+        prodId = data.id;
+      }
+      if (state.editingImages.length && prodId) {
+        await sb.from('product_images').insert(state.editingImages.map((im, i) => ({ product_id: prodId, url: im.url, is_main: im.is_main, sort_order: i })));
+      }
+      resetProdForm();
+      loadAdminData();
+    }
+    async function deleteProduct(id) {
+      if (!confirm('¿Eliminar producto?')) return;
+      await sb.from('products').delete().eq('id', id);
+      loadAdminData();
+    }
+    async function addCategory(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-cat-name').value.trim();
+      const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-');
+      await sb.from('categories').insert({ name, slug, sort_order: state.categories.length + 1 });
+      document.getElementById('new-cat-name').value = '';
+      loadAdminData();
+    }
+    async function deleteCategory(id) {
+      const { error } = await sb.from('categories').delete().eq('id', id);
+      if (error) alert('No podés eliminar una categoría con productos asignados.');
+      loadAdminData();
+    }
+    async function uploadSiteAsset(field, file) {
+      if (!file) return;
+      const url = await uploadToStorage(file);
+      if (url) { state.settings[field] = url; renderAdminSettingsPreviews(); }
+    }
+    function clearSiteAsset(field) { state.settings[field] = null; renderAdminSettingsPreviews(); }
+    function renderAdminSettingsPreviews() {
+      const s = state.settings;
+      document.getElementById('set-logo-prev').innerHTML = s.logo_url ? `<img src="${esc(s.logo_url)}" class="h-full object-contain" />` : 'Sin logo';
+      document.getElementById('set-hero-prev').innerHTML = s.hero_image_url ? `<img src="${esc(s.hero_image_url)}" class="w-full h-full object-cover" />` : 'Sin foto';
+      document.getElementById('set-hist-prev').innerHTML = s.history_image_url ? `<img src="${esc(s.history_image_url)}" class="w-full h-full object-cover" />` : 'Sin foto';
+    }
+    function renderAdminFaqs() {
+      const faqs = state.settings.faq_items || [];
+      document.getElementById('admin-faq-list').innerHTML = faqs.map((f, i) => `
+        <div class="p-2.5 rounded-xl bg-crema-100 border border-beige-200 space-y-1.5">
+          <input type="text" value="${esc(f.question)}" onchange="state.settings.faq_items[${i}].question=this.value" placeholder="Pregunta" class="w-full px-2.5 py-1.5 rounded-lg border border-beige-300 bg-crema-50 text-xs" />
+          <textarea rows="2" onchange="state.settings.faq_items[${i}].answer=this.value" placeholder="Respuesta" class="w-full px-2.5 py-1.5 rounded-lg border border-beige-300 bg-crema-50 text-xs">${esc(f.answer)}</textarea>
+          <button type="button" onclick="state.settings.faq_items.splice(${i},1);renderAdminFaqs()" class="text-[11px] text-red-700">Eliminar</button>
+        </div>`).join('');
+    }
+    function addFaqRow() {
+      state.settings.faq_items = [...(state.settings.faq_items || []), { question: '', answer: '' }];
+      renderAdminFaqs();
+    }
+    async function saveSettings(e) {
+      e.preventDefault();
+      await sb.from('site_settings').update({
+        logo_url: state.settings.logo_url,
+        hero_image_url: state.settings.hero_image_url,
+        history_image_url: state.settings.history_image_url,
+        whatsapp_number: document.getElementById('s-wa').value.trim(),
+        instagram_url: document.getElementById('s-ig').value.trim(),
+        contact_email: document.getElementById('s-email').value.trim(),
+        business_hours: document.getElementById('s-hours').value.trim(),
+        business_info: document.getElementById('s-info').value.trim(),
+        faq_items: state.settings.faq_items || []
+      }).eq('id', 'default');
+      alert('Configuración guardada correctamente.');
+      loadAdminData();
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
